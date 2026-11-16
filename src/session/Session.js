@@ -1,4 +1,7 @@
 const { EventEmitter } = require('events');
+const Docker = require('dockerode');
+
+const docker = new Docker({ socketPath: '/var/run/docker.sock' });
 
 class Session extends EventEmitter {
   constructor(id, container, ip, timeoutMs) {
@@ -7,12 +10,14 @@ class Session extends EventEmitter {
     this.container = container;
     this.ip = ip;
     this.stream = null;
+    this.execId = null;
     this.timeoutHandle = null;
     this.idleTimeoutMs = timeoutMs;
     this.touch();
   }
+
   async attach() {
-    this.stream = await this.container.exec({
+    const exec = await this.container.exec({
       Cmd: ['/bin/bash', '-i'],
       AttachStdin: true,
       AttachStdout: true,
@@ -21,17 +26,22 @@ class Session extends EventEmitter {
       Env: ['TERM=xterm-256color']
     });
 
-    this.stream = await this.stream.start({ Tty: true, hijack: true, stdin: true });
+    this.execId = exec.id;
+
+    this.stream = await exec.start({ Tty: true, hijack: true, stdin: true });
 
     this.stream.on('data', chunk => this.emit('data', chunk));
     this.stream.on('end', () => this.emit('end'));
     this.stream.on('error', err => this.emit('error', err));
   }
+
   write(data) {
     if (this.stream) this.stream.write(data);
   }
-  resize(cols, rows) {
-    if (this.execId && cols && rows) {
+
+  async resize(cols, rows) {
+    if (this.execId) {
+      await docker.getExec(this.execId).resize({ Width: cols, Height: rows });
     }
   }
 
@@ -49,5 +59,4 @@ class Session extends EventEmitter {
     this.emit('destroyed');
   }
 }
-
 module.exports = Session;
