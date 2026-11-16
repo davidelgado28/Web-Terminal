@@ -1,1 +1,21 @@
-
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Terminal</title>
+  <link rel="stylesheet" href="css/terminal.css">
+</head>
+<body>
+  <div id="container">
+    <div id="header">
+      <span id="status">Conectando</span>
+      <button id="btn-new">Nova sessão</button>
+    </div>
+    <div id="terminal"></div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/addon-fit.min.js"></script>
+  <script src="js/terminal.js"></script>
+</body>
+</html>
