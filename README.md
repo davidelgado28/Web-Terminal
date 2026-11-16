@@ -161,20 +161,6 @@ O sandbox Ubuntu 24.04 vem com:
 | Rate limit por IP | `MAX_SESSIONS_PER_IP` |
 | Cleanup de órfãos | Loop a cada 5 min + no boot |
 
-### Avisos para produção
-
-1. **`docker.sock` montado = root no host.** Para produção real:
-   - Rode o servidor **fora** de containers, no host
-   - Ou use **Podman** (rootless) com seu socket
-   - Ou use **gVisor** (`runsc`) como runtime dos sandboxes
-   - Ou coloque um proxy com API Docker restrita (ex: [ Tecnativa docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy))
-
-2. **Adicione HTTPS** — use Nginx ou Caddy como reverse proxy para `wss://`
-
-3. **Adicione autenticação** — mesmo um token simples evita abuso público
-
-4. **Considere rede com filtro** — se os sandboxes precisarem de internet, use bridge + iptables para bloquear tráfego interno (rede local, metadata de clouds)
-
 ## Desenvolvimento
 
 ### Modo watch
